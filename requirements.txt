@@ -1,0 +1,9 @@
+streamlit==1.37.0
+opencv-python-headless==4.10.0.84
+numpy==2.0.1
+passlib[argon2]==1.7.4
+pyotp==2.9.0
+python-dotenv==1.0.1
+pydantic==2.8.2
+requests==2.32.3
+geopy==2.4.1
