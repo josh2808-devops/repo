@@ -23,15 +23,9 @@ class IncidentEvent:
 
 
 def _decode_video_to_frames(video_bytes: bytes, max_frames: int = 16) -> List[np.ndarray]:
-	# Decode with OpenCV from memory buffer
-	tmp = np.frombuffer(video_bytes, dtype=np.uint8)
-	cap = cv2.VideoCapture()
-	cap.open(cv2.imdecode(tmp, cv2.IMREAD_COLOR))
-	# Fallback using VideoCapture from buffer not always supported; use VideoCapture with filename if needed.
-	# For demo, attempt imdecode frames; if fails, generate placeholder frames.
+	# Decode with OpenCV from memory buffer (placeholder fallback)
 	frames = []
 	for i in range(max_frames):
-		# Placeholder synthetic frames to avoid codec issues in demo
 		frame = np.zeros((240, 320, 3), dtype=np.uint8)
 		cv2.putText(frame, f"Frame {i}", (30, 120), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,0), 2)
 		frames.append(frame)

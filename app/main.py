@@ -35,12 +35,14 @@ with st.sidebar:
 	location_text = st.text_input("Area/Location", os.getenv("DEFAULT_LOCATION_TEXT", "City Center"))
 	require_2fa = os.getenv("REQUIRE_2FA", "true").lower() == "true"
 	st.caption(f"2FA required: {'Yes' if require_2fa else 'No'}")
+	video_folder = st.text_input("Auto-Ingest Folder (optional)", os.getenv("VIDEO_INGEST_FOLDER", ""))
+	frames_per_batch = st.slider("Frames per batch", min_value=8, max_value=64, value=int(os.getenv("FRAMES_PER_BATCH", "16")), step=8)
 
 st.title("Smart & Secure Real-Time Traffic Signal Controller")
 
-st.markdown("Upload up to 9 videos. Processing is local. For demo purposes, incident detection uses heuristics.")
+st.markdown("Upload up to 18 videos. Processing is local. For demo purposes, incident detection uses heuristics.")
 
-NUM_FEEDS = 9
+NUM_FEEDS = 18
 
 if "uploaded_videos" not in st.session_state:
 	st.session_state["uploaded_videos"] = [None] * NUM_FEEDS
@@ -54,6 +56,17 @@ if "vehicle_counts" not in st.session_state:
 cols = st.columns(3)
 
 uploaded_files = [None] * NUM_FEEDS
+
+# Optional: ingest videos from folder
+if video_folder and os.path.isdir(video_folder):
+	files = sorted([f for f in os.listdir(video_folder) if f.lower().endswith((".mp4",".avi",".mov",".mkv"))])[:NUM_FEEDS]
+	for i, fname in enumerate(files):
+		try:
+			with open(os.path.join(video_folder, fname), "rb") as f:
+				st.session_state["uploaded_videos"][i] = f.read()
+			cols[i % 3].success(f"Ingested: {fname}")
+		except Exception:
+			cols[i % 3].warning(f"Failed to read: {fname}")
 
 for i in range(NUM_FEEDS):
 	with cols[i % 3]:
@@ -70,7 +83,6 @@ status_placeholders = [cols[i % 3].empty() for i in range(NUM_FEEDS)]
 
 if run:
 	progress_bar = st.progress(0, text="Processing feeds...")
-	frames_per_batch = 16
 	for step in range(50):
 		for i in range(NUM_FEEDS):
 			video_bytes = st.session_state["uploaded_videos"][i]
