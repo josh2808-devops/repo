@@ -6,6 +6,7 @@ from enum import Enum
 from typing import List, Optional
 
 import requests
+import logging
 
 class AlertType(Enum):
 	ACCIDENT = "Accident"
@@ -75,10 +76,10 @@ class Notifier:
 				"From": self.twilio_from,
 				"To": to_number,
 				"Body": message,
-			})
+			}, timeout=10)
 			resp.raise_for_status()
-		except Exception:
-			pass
+		except Exception as exc:
+			logging.exception("Failed to send SMS alert: %s", exc)
 
 	def _send_email(self, to_email: str, subject: str, body: str) -> None:
 		# Simplified: prefer using a service or SMTP library. Placeholder stub.

@@ -1,6 +1,6 @@
 # Smart & Secure Real-Time Traffic Signal Controller (Software)
 
-A Streamlit-based dashboard that processes up to 9 video feeds to:
+A Streamlit-based dashboard that processes up to 18 video feeds to:
 - Detect and count vehicles, adapt signal timing
 - Heuristically detect incidents (accident, fire, flood)
 - Notify authorities via SMS/Email when configured
@@ -24,17 +24,24 @@ cp .env.example .env
 ```
 3. Run the app:
 ```bash
-streamlit run app/main.py
+streamlit run app/main.py --server.port 5000 --server.address 0.0.0.0
 ```
 
 ## Login Setup
 On first run, you will be asked to create an admin account. Passwords are hashed with Argon2id. Optionally enable TOTP 2FA.
 
 ## Uploading Videos
-Use the dashboard to upload up to 9 videos. Processing happens locally. No external services required.
+Use the dashboard to upload up to 18 videos. Processing happens locally. No external services required.
 
 ## Notifications (Optional)
 Set Twilio or SMTP variables in `.env` to enable SMS/Email alerts to the appropriate contacts.
+
+## Security Scan (Optional)
+Run static and dependency scans:
+```bash
+bandit -r . -q || true
+pip-audit || true
+```
 
 ## Notes
 - This is a software-only demonstration. Preventing RF jamming is out of scope for pure software; the system uses retries and multiple channels for resilience.
